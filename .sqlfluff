@@ -1,0 +1,3 @@
+﻿[sqlfluff]
+dialect = ansi
+rules = DQ01, DQ02, DQ03

@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sqlfluff-dq-rules"
+version = "0.1.0"
+description = "Data Quality Rules plugin for SQLFluff - adds SQL best practice checks for data development"
+requires-python = ">=3.9"
+dependencies = ["sqlfluff>=4.0.0"]
+
+[project.entry-points.sqlfluff]
+dq_rules = "sqlfluff_plugin_dq"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["sqlfluff_plugin_dq*"]
