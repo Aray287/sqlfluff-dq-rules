@@ -1,63 +1,94 @@
 # sqlfluff-dq-rules
 
-> Data Development Quality Rules plugin for SQLFluff
+> Data Development SQL Quality Rules Plugin for SQLFluff
 
-Custom rules plugin for [SQLFluff](https://github.com/sqlfluff/sqlfluff) that adds SQL quality checks for data development scenarios. Can be used as a SQL quality gate in CI pipelines.
+Custom rules plugin that adds SQL quality checks for data development. Can be used as a SQL quality gate in CI pipelines.
+
+---
 
 ## Rules
 
-| Code | Name | Detects | Pain Point |
-|------|------|---------|------------|
-| DQRules_DQ01 | \dq.no_select_star\ | \*\ wildcard in SELECT clauses | Poor query performance, fragile schema |
-| DQRules_DQ02 | \dq.require_where_for_modify\ | DELETE/UPDATE without WHERE | Accidental data loss/corruption |
-| DQRules_DQ03 | \dq.explicit_join\ | Comma-separated tables in FROM | Poor readability, accidental cross joins |
+| Code | Name | What It Detects | Why It Matters |
+|------|------|-----------------|----------------|
+| `DQRules_DQ01` | No SELECT * | `SELECT *` and `SELECT t.*` in queries | Prevents fragile schema dependencies, reduces unnecessary I/O |
+| `DQRules_DQ02` | WHERE required | `DELETE` / `UPDATE` without a `WHERE` clause | Prevents accidental full-table data loss |
+| `DQRules_DQ03` | Explicit JOIN only | Comma-separated tables in `FROM` clause | Improves readability, prevents accidental cross joins |
+
+---
 
 ## Quick Start
 
-### Install
-
-\\ash
+```bash
+# Install SQLFluff and this plugin
 pip install sqlfluff
 pip install sqlfluff-dq-rules
-\
-### Usage
 
-\\ash
-sqlfluff lint --rules DQRules_DQ01,DQRules_DQ02,DQRules_DQ03 --dialect ansi query.sql
-\
-Or create a \.sqlfluff\ config file in your project root:
+# Lint a SQL file with DQ rules enabled
+sqlfluff lint --rules DQRules_DQ01,DQRules_DQ02,DQRules_DQ03 --dialect ansi your_query.sql
+```
 
-\\ini
+Or create a `.sqlfluff` config in your project root:
+
+```ini
 [sqlfluff]
 dialect = ansi
 rules = DQRules_DQ01, DQRules_DQ02, DQRules_DQ03
-\
-### Verify
+```
 
-\\sql
--- test.sql
+Then simply run:
+
+```bash
+sqlfluff lint your_query.sql
+```
+
+### Example
+
+```sql
+-- bad.sql
 SELECT * FROM orders;
 DELETE FROM orders;
-\
-\\ash
-sqlfluff lint test.sql
-# L:1 | DQRules_DQ01 | SELECT statements should not use '*' wildcard.
-# L:2 | DQRules_DQ02 | DELETE and UPDATE statements must have a WHERE clause.
-\
+SELECT o.*, c.name FROM orders o, customers c WHERE o.id = c.id;
+```
+
+```bash
+$ sqlfluff lint bad.sql
+L:1 | DQRules_DQ01 | SELECT statements should not use wildcard.
+L:2 | DQRules_DQ02 | DELETE and UPDATE statements must have a WHERE clause.
+L:3 | DQRules_DQ01 | SELECT statements should not use wildcard.
+L:3 | DQRules_DQ03 | Use explicit JOIN instead of comma-separated tables.
+```
+
+---
+
 ## Architecture
 
-\SQLFluff CLI -> Plugin Manager (pluggy) -> sqlfluff-dq-rules -> SQL AST Parser
-\
-SQLFluff discovers plugins via \importlib.metadata.entry_points\. Rules extend \BaseRule\ and use \SegmentSeekerCrawler\ to find AST nodes, then \_eval()\ checks for violations.
+```
+SQLFluff CLI -> Plugin Manager (pluggy) -> sqlfluff-dq-rules -> SQL AST Engine
+```
+
+SQLFluff discovers plugins via `importlib.metadata.entry_points`. Each rule extends `BaseRule`, uses `SegmentSeekerCrawler` to locate AST nodes, and `_eval()` checks for pattern violations.
+
+### Plugin Loading
+
+pyproject.toml defines the entry point:
+
+```toml
+[project.entry-points.sqlfluff]
+dq_rules = "sqlfluff_plugin_dq"
+```
+
+---
 
 ## Requirements
 
 - Python >= 3.9
 - SQLFluff >= 4.0.0
-- Any OS (Windows / Linux / macOS)
+- Any OS (no GPU required)
 
 ## Development
 
-\\ash
+```bash
+git clone https://github.com/<YOUR_USERNAME>/sqlfluff-dq-rules.git
+cd sqlfluff-dq-rules
 pip install -e .
-\
+```

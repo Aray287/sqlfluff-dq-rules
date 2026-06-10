@@ -10,7 +10,7 @@ from sqlfluff.core.rules import BaseRule, LintResult, RuleContext
 from sqlfluff.core.rules.crawlers import SegmentSeekerCrawler
 
 
-class Rule_DQ03(BaseRule):
+class Rule_DQRules_DQ03(BaseRule):
     """Use explicit ``JOIN`` syntax instead of comma-separated tables.
 
     Comma-separated tables in FROM clauses are harder to read and

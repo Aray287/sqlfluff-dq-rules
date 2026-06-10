@@ -5,7 +5,7 @@ from sqlfluff.core.rules import BaseRule, LintResult, RuleContext
 from sqlfluff.core.rules.crawlers import SegmentSeekerCrawler
 
 
-class Rule_DQ01(BaseRule):
+class Rule_DQRules_DQ01(BaseRule):
     """SELECT statements should not use ``*`` wildcard."""
 
     name = "dq.no_select_star"

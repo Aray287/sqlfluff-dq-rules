@@ -13,7 +13,7 @@ from sqlfluff.core.rules import BaseRule, LintResult, RuleContext
 from sqlfluff.core.rules.crawlers import SegmentSeekerCrawler
 
 
-class Rule_DQ02(BaseRule):
+class Rule_DQRules_DQ02(BaseRule):
     """DELETE and UPDATE statements must have a ``WHERE`` clause.
 
     Unconditional DELETE/UPDATE can cause data loss or corruption

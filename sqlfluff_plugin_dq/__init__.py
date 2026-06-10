@@ -13,7 +13,7 @@ from sqlfluff.core.rules import BaseRule
 @hookimpl
 def get_rules() -> list[type[BaseRule]]:
     """Register custom data quality rules."""
-    from sqlfluff_plugin_dq.rules.DQ01 import Rule_DQ01
-    from sqlfluff_plugin_dq.rules.DQ02 import Rule_DQ02
-    from sqlfluff_plugin_dq.rules.DQ03 import Rule_DQ03
-    return [Rule_DQ01, Rule_DQ02, Rule_DQ03]
+    from sqlfluff_plugin_dq.rules.DQ01 import Rule_DQRules_DQ01
+    from sqlfluff_plugin_dq.rules.DQ02 import Rule_DQRules_DQ02
+    from sqlfluff_plugin_dq.rules.DQ03 import Rule_DQRules_DQ03
+    return [Rule_DQRules_DQ01, Rule_DQRules_DQ02, Rule_DQRules_DQ03]
